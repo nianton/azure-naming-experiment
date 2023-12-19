@@ -3,6 +3,7 @@ targetScope = 'subscription'
 param location string
 param applicationName string
 param environment string
+param resourceGroupName string = ''
 param tags object = {}
 
 var defaultTags = union({
@@ -10,9 +11,11 @@ var defaultTags = union({
   environment: environment
 }, tags)
 
+var rgName = empty(resourceGroupName) ? 'rg-${applicationName}-${environment}' : resourceGroupName
+
 // Resource group which is the scope for the main deployment below
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: 'rg-${applicationName}-${environment}'
+  name: rgName
   location: location
   tags: defaultTags
 }
@@ -23,10 +26,15 @@ module naming 'modules/naming.module.bicep' = {
   name: 'NamingDeployment'
   params: {
     location: location
-    suffix: [
+    prefix: [
+      subscription().displayName
+      rg.name
       applicationName
       environment
-      '**location**' // azure-naming location/region placeholder, it will be replaced with its abbreviation
+    ]
+    suffix: [
+      '001'
+      // '**location**' // azure-naming location/region placeholder, it will be replaced with its abbreviation
     ]
     uniqueLength: 6
     uniqueSeed: rg.id

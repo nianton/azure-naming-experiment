@@ -3,10 +3,13 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "applicationName": {
-      "value": "newapp"
+      "value": "myapp"
     },
     "environment": {
       "value": "dev"
+    },
+    "resourceGroupName": {
+      "value": "rg-min99"
     },
     "location": {
       "value": "westeurope"
